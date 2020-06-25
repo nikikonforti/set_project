@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+    <!-- JQuery -->
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.0/jquery-ui.min.js"></script>
+    <!-- <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css"> -->
+    <!-- <script type="text/javascript" src="{{ url_for('static', filename = '../static/home.js') }}"></script> -->
+
+    <script>
+        var gameHand = {{gameHand|tojson}}
+        var deckSize = {{deckSize|tojson}}
+    </script>
+
+    <script src="../static/main.js"></script>
+
+
+    <style>
+
+    body, html {
+        height: 100%;
+        margin: 1%;
+        background: rgb(173, 199, 209);
+    }
+
+    .header{
+        font-size: 50px;
+        text-align: center;
+        margin-top: 40px;
+        padding-bottom: 30px;
+    }
+
+    .but{
+        color: black;
+        font-weight: bold;
+        font-size: 30px;
+        margin-top: 80px;
+        background: grey;
+        border-radius: 10px;
+        opacity: 0.8;
+        display: inline;
+    }
+    .but:hover{
+        cursor: grab;
+        background: rgb(83, 82, 82);
+    }
+    #deal{
+        float: right;
+        margin-right: 60px;
+    }
+
+    .entries{
+        display: inline-block;
+        margin: 10px;
+    }
+    #id{
+        background-color: white;
+    }
+    img{
+        width: 65%;
+    }
+    img:hover{
+        cursor: grab;
+        border-color: rgb(83, 82, 82);
+        opacity: 60%;
+    }
+    #deck{
+        background: white;
+        width: 1000px;
+        padding: 20px;
+        margin-left: 50px;
+    }
+    .centered{
+        margin-left: 80px;
+    }
+    .selectedCard{
+        opacity: 40%;
+    }
+    #score{
+        font-size: 30px;
+        display: inline-block;
+        margin-left: 50px;
+        margin-top: 70px;
+    }
+    #score_header{
+        font-size: 30px;
+        display: inline-block;
+        margin-left: 50px;
+        margin-top: 70px;
+    }
+
+ 
+    </style>
+</head>
+
+<body>
+    <div class = "container">
+    <div class = "header"> Set! </div>
+
+    <div id = "deck" class = "hand">  </div>
+
+    <div id = "score_header"> your score: </div>
+    <div id = "score"> {{0}}</div>
+    <button class = "but" id = "deal"> deal </button>
+    
+</div>
+</body>
+</html>
