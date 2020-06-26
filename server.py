@@ -1,8 +1,11 @@
 from flask import Flask
 from flask import render_template
-from flask import Response, request, jsonify
+from flask import Response, request, session, jsonify
+from random import random, seed
+import uuid
 import game
 app = Flask(__name__)
+app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
 
 thisGame = None
 gameHand = None
@@ -11,6 +14,11 @@ gameHand = None
 def home():
    global thisGame 
    global gameHand
+   print(session)
+   id = uuid.uuid1()
+   seed(1)
+   session["user"] = id.int #random()
+   print(session)
    thisGame = game.createGame()
    gameHand = thisGame.dealInitial()
    return render_template('main.html', gameHand=gameHand, deckSize=thisGame.getRemainingDeck())  #feed list to html
@@ -18,6 +26,7 @@ def home():
 @app.route('/3more', methods=['GET', 'POST'])
 def deal3More():
    global gameHand
+   print(session)
    gameHand = thisGame.clickDeal()
    return jsonify(gameHand=gameHand, deckSize=thisGame.getRemainingDeck())
 
