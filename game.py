@@ -1,16 +1,16 @@
-######## OVERALL TODO: #########
-# make multiplayer 
-# make gui
-################################
 import random 
 from itertools import combinations
 
 class Game:
-	def __init__(self, cards, numPlayers):
-		self.numPlayers = numPlayers
+	def __init__(self, cards, playerIDs):
+		self.numPlayers = len(playerIDs)
 		self.cards = cards
 		self.gameHand = []
-		self.playerPoints = 0
+		self.playerPoints = {}
+		for p in playerIDs:
+			self.playerPoints[p] = 0
+		print("playerPoints!!")
+		print(self.playerPoints)
 
 	def dealInitial(self):
 		random.shuffle(self.cards)
@@ -107,10 +107,9 @@ def createDeck():
 
     return deck
 
-def createGame():
-	numPlayers = 4 #TODO: dont hard code num players
+def createGame(playerIDs):
 	deck = createDeck()
-	game = Game(deck, numPlayers)
+	game = Game(deck, playerIDs)
 	return game
 
 # def main():

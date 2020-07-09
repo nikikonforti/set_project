@@ -1,10 +1,12 @@
-from flask import Flask
-from flask import render_template
-from flask import Response, request, session, jsonify
+from flask import Flask, render_template, request, jsonify, make_response, json
+from flask import Response, session
 import uuid
 import game
+
 app = Flask(__name__)
+
 app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
+
 
 thisGame = None
 gameHand = None
@@ -12,19 +14,27 @@ playerIDs = []
 
 @app.route('/')
 def home():
-   global thisGame 
-   global gameHand
-   global playerIDs
-   print(session)
-   id = uuid.uuid1() #How do we store each player's uuid?
-   session["user"] = id.int 
-   print(session)
-   playerIDs.append(session["user"])
-   print("playerIDs")
-   print(playerIDs)
-   thisGame = game.createGame()
-   gameHand = thisGame.dealInitial()
-   return render_template('main.html', gameHand=gameHand, deckSize=thisGame.getRemainingDeck()) 
+	global playerIDs
+	print(session)
+	if 'user' in session:
+	    print("User exists: ")
+	else:
+		id = uuid.uuid1()
+		session["user"] = id.int 
+		print(session)
+		playerIDs.append(session["user"])
+	print("playerIDs:")
+	print(playerIDs)
+	return render_template('playerload.html')
+
+@app.route('/play', methods=['GET', 'POST'])
+def startGame():
+	global thisGame 
+	global gameHand
+	global playerIDs
+	thisGame = game.createGame(playerIDs)
+	gameHand = thisGame.dealInitial()
+	return render_template('main.html', gameHand=gameHand, deckSize=thisGame.getRemainingDeck())
 
 @app.route('/3more', methods=['GET', 'POST'])
 def deal3More():
@@ -70,4 +80,6 @@ def removeSet():
 
 
 if __name__ == '__main__':
-   app.run(debug = True)
+    app.run(host='0.0.0.0', port=5000, debug=True)
+
+playerIDs = []
