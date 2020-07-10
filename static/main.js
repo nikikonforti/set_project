@@ -1,11 +1,3 @@
-/*
-TODO:
-* try playing to very end of deck to see what happens:
-    * the last set doesnt leave 
-    * make it so that it is okay with 6 cards instead of 9 at end 
-*/
-
-
 var display_hand = function(gameHand){
     console.log("hello")
     console.log(gameHand)
@@ -90,6 +82,7 @@ var check_set = function(possibleSet, possibleSetSrc){
         contentType: "application/json; charset=utf-8",
         data: JSON.stringify({possibleSet: possibleSet}),
         success: function(result){
+            console.log("success")
             isSet = result["isSet"]
             playerPoints = result["playerPoints"]
             console.log("player points:")

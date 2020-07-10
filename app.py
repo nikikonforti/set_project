@@ -1,9 +1,11 @@
 from flask import Flask, render_template, request, jsonify, make_response, json
 from flask import Response, session
+from flask_socketio import SocketIO, emit
 import uuid
 import game
 
 app = Flask(__name__)
+#socketio = SocketIO(app)
 
 app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
 
@@ -14,27 +16,28 @@ playerIDs = []
 
 @app.route('/')
 def home():
-	global playerIDs
-	print(session)
-	if 'user' in session:
-	    print("User exists: ")
-	else:
-		id = uuid.uuid1()
-		session["user"] = id.int 
-		print(session)
-		playerIDs.append(session["user"])
-	print("playerIDs:")
-	print(playerIDs)
-	return render_template('playerload.html')
+   global playerIDs
+   print(session)
+   if 'user' in session:
+      print("user exists: ")
+   else:
+      id = uuid.uuid1()
+      session["user"] = id.int
+      print(session)
+      playerIDs.append(session["user"])
+   print("playerIDs: ")
+   print(playerIDs)
+   return render_template('playerload.html')
 
 @app.route('/play', methods=['GET', 'POST'])
 def startGame():
-	global thisGame 
-	global gameHand
-	global playerIDs
-	thisGame = game.createGame(playerIDs)
-	gameHand = thisGame.dealInitial()
-	return render_template('main.html', gameHand=gameHand, deckSize=thisGame.getRemainingDeck())
+   global thisGame 
+   global gameHand
+   global playerIDs
+   print("start game.")
+   thisGame = game.createGame(playerIDs)
+   gameHand = thisGame.dealInitial()
+   return render_template('main.html', gameHand=gameHand, deckSize=thisGame.getRemainingDeck())
 
 @app.route('/3more', methods=['GET', 'POST'])
 def deal3More():
@@ -46,13 +49,17 @@ def deal3More():
 @app.route('/checkSet', methods=['GET', 'POST'])
 def checkSet():
    data = request.get_json()
+   print("data in check set:")
+   print(data)
    possibleSet = data["possibleSet"]
    global thisGame
    isSet = thisGame.isSet(possibleSet)
    if isSet:
-      thisGame.setPoints(thisGame.getPoints() + 1)
+      #thisGame.setPoints(thisGame.getPoints() + 1) TODO: fix these to give points to the specific player in question.
+      print("player gets point!")
    else:
-      thisGame.setPoints(thisGame.getPoints() - 1)
+      #thisGame.setPoints(thisGame.getPoints() - 1)
+      print("player does not win point.")
    return jsonify(isSet=isSet, playerPoints=thisGame.getPoints())
 
 @app.route('/checkSetInHand', methods=['GET', 'POST'])
@@ -62,7 +69,8 @@ def checkSetInHand():
    global thisGame
    isSet = thisGame.isSetInHand(gameHand)
    if isSet:
-      thisGame.setPoints(thisGame.getPoints() -1)
+      #thisGame.setPoints(thisGame.getPoints() -1) TODO: same as above.
+      print("player gets a point removed.")
    return jsonify(isSet = isSet, playerPoints=thisGame.getPoints())
 
 
