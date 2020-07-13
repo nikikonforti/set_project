@@ -6,8 +6,58 @@
     <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
     <script src="https://code.jquery.com/ui/1.12.0/jquery-ui.min.js"></script>
     <!-- <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css"> -->
-    <script type="text/javascript" src="{{ url_for('static', filename = '../static/playerload.js') }}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.1/socket.io.js"></script>
 
+    <script type="text/javascript" src="{{ url_for('static', filename = '../static/playerload.js') }}"></script>
+    <script type="text/javascript">
+        $(document).ready(function(){
+            // sending a connect request to the server.
+            var socket = io.connect('http://localhost:5000');
+            
+            socket.on('after connect', function(msg){
+            	console.log('After connect', msg);
+            });
+
+            // An event handler for a change of value 
+			$('input.sync').on('input', function(event) {
+                socket.emit('Slider value changed', {who: $(this).attr('id'), data: $(this).val()});
+                console.log("who: ")
+                console.log($(this).attr('id')) //this gets you the slider that is moving, not which tab / user 
+                console.log("data: ")
+                console.log($(this).val())
+                return false;
+            });
+
+
+            socket.on('update value', function(msg) {
+            	console.log('update value in html');
+                $('#'+msg.who).val(msg.data);
+            });
+
+        $(document).on("click", "#play_button", function(){
+            console.log("play button clicked")
+            //window.location = "/play"
+            // $('input.sync').on('input', function(event) {
+                socket.emit('Play button clicked', {who: $(this).attr('id'), data: 'main.html'})
+                return false;
+            // });
+
+            
+
+			
+        });
+        socket.on('update screen', function(msg) {
+            console.log('button pushed and ready for update screen');
+            $('#'+msg.who).val(msg.data);
+
+            console.log("who? " + $('#'+msg.who).val(msg.data))
+            console.log("who update " + msg.who)
+            console.log("data update " + msg.data)
+            window.location = "/play" //TODO: this works for updating both screens (good) but doesnt have the same screen (bad)
+
+        });
+    });
+    </script>
 
     <style>
     body{
@@ -29,6 +79,22 @@
     <div class = "header"> Let's play Set! </div>
 
     <div class = "players"> When you have all your players logged on, press to play: </div>
-    <button class = "play_button"> play! </button>
+    <div class="form-group">
+        <label for="formControlRange">Demo Slider </label>
+        <button type="range" class="form-control-range sync" id = "play_button"> play! </button>
+    </div>
+    <div class="container text-center">
+		<h1 >Slider Demo</h1>
+		<form class="mt-5">
+		  <div class="form-group">
+		    <label for="formControlRange">Demo Slider 1</label>
+		    <input type="range" class="form-control-range sync" id="slider1" min="0" max="50" value="{{slider1}}">
+		  </div>
+		  <div class="form-group">
+		    <label for="formControlRange">Demo Slider 2</label>
+		    <input type="range" class="form-control-range sync" id="slider2" min="0" max="50" value="{{slider2}}">
+		  </div>
+		</form>	
+	</div>
 </body>
 

@@ -5,7 +5,7 @@ import uuid
 import game
 
 app = Flask(__name__)
-#socketio = SocketIO(app)
+socketio = SocketIO(app)
 
 app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
 
@@ -13,6 +13,11 @@ app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
 thisGame = None
 gameHand = None
 playerIDs = []
+
+values = {
+    'slider1': 25,
+    'slider2': 0,
+}
 
 @app.route('/')
 def home():
@@ -29,12 +34,28 @@ def home():
    print(playerIDs)
    return render_template('playerload.html')
 
+@socketio.on('connect')
+def test_connect():
+   emit('after connect',  {'data':'Lets dance'})
+
+@socketio.on('Slider value changed')
+def value_changed(message):
+   print("in python value_changed")
+   values[message['who']] = message['data']
+   emit('update value', message, broadcast=True)
+
+@socketio.on('Play button clicked')
+def play_clicked(message):
+   print("MESSAGE:")
+   print(message)
+   emit('update screen', message, broadcast=True)
+   #return render_template('main.html', gameHand=None, deckSize=1)
+
 @app.route('/play', methods=['GET', 'POST'])
 def startGame():
    global thisGame 
    global gameHand
    global playerIDs
-   print("start game.")
    thisGame = game.createGame(playerIDs)
    gameHand = thisGame.dealInitial()
    return render_template('main.html', gameHand=gameHand, deckSize=thisGame.getRemainingDeck())
@@ -88,6 +109,7 @@ def removeSet():
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True)
+   #app.run(host='0.0.0.0', port=5000, debug=True)
+   socketio.run(app, host='0.0.0.0')
 
 playerIDs = []
