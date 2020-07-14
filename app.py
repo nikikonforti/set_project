@@ -48,16 +48,18 @@ def value_changed(message):
 def play_clicked(message):
    print("MESSAGE:")
    print(message)
+   global thisGame 
+   global playerIDs
+   global gameHand
+   thisGame = game.createGame(playerIDs)
+   gameHand = thisGame.dealInitial()
+   #startGame()
    emit('update screen', message, broadcast=True)
    #return render_template('main.html', gameHand=None, deckSize=1)
 
 @app.route('/play', methods=['GET', 'POST'])
 def startGame():
-   global thisGame 
-   global gameHand
-   global playerIDs
-   thisGame = game.createGame(playerIDs)
-   gameHand = thisGame.dealInitial()
+   print("startGame")
    return render_template('main.html', gameHand=gameHand, deckSize=thisGame.getRemainingDeck())
 
 @app.route('/3more', methods=['GET', 'POST'])
