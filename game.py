@@ -75,11 +75,14 @@ class Game:
 					self.gameHand.remove(g)
 		return self.gameHand
 
-	def getPoints(self):
-		return self.playerPoints
+	def getPoints(self, playerID):
+		return self.playerPoints[str(playerID)]
 
-	def setPoints(self, newPoints):
-		self.playerPoints = newPoints
+	def setPoints(self, playerID, newPoints):
+		self.playerPoints[playerID] = newPoints
+
+	def getAllPlayerPoints(self):
+		return self.playerPoints
 
 	def getRemainingDeck(self):
 		return len(self.cards)

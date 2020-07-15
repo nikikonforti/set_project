@@ -8,9 +8,15 @@
     <!-- <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css"> -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.1/socket.io.js"></script>
 
+    <script>
+        var playerID = {{playerID|tojson}}
+    </script>
+
     <script type="text/javascript" src="{{ url_for('static', filename = '../static/playerload.js') }}"></script>
     <script type="text/javascript">
         $(document).ready(function(){
+            console.log("playerID at playerload")
+            console.log(playerID)
             // sending a connect request to the server.
             var socket = io.connect('http://localhost:5000');
             
@@ -36,16 +42,10 @@
 
         $(document).on("click", "#play_button", function(){
             console.log("play button clicked")
-            //window.location = "/play"
-            // $('input.sync').on('input', function(event) {
-                socket.emit('Play button clicked', {who: $(this).attr('id'), data: 'main.html'})
-                return false;
-            // });
-
-            
-
-			
+            socket.emit('Play button clicked', {who: $(this).attr('id'), data: 'main.html'})
+            return false;
         });
+
         socket.on('update screen', function(msg) {
             console.log('button pushed and ready for update screen');
             $('#'+msg.who).val(msg.data);
@@ -53,7 +53,25 @@
             console.log("who? " + $('#'+msg.who).val(msg.data))
             console.log("who update " + msg.who)
             console.log("data update " + msg.data)
-            window.location = "/play" //TODO: this works for updating both screens (good) but doesnt have the same screen (bad)
+            window.location = "/play/" + playerID // Sends all tabs to same game object.
+            // $.ajax({ 
+            //     type: "POST",
+            //     url: "/play",                
+            //     dataType : "html",
+            //     contentType: "application/json; charset=utf-8",
+            //     data: JSON.stringify({playerID}),
+            //     success: function(result){
+            //         console.log("success!")
+            //         console.log(result)
+            //     },
+            //     error: function(request, status, error){
+            //         console.log("Error");
+            //         console.log(request)
+            //         console.log(status)
+            //         console.log(error)
+            //     },
+            // }); 
+            // TODO: basically I tried to create this ajax call so i didnt have to put the entire playerID in the path but there are issues in chrome to render an entire HTML page with an ajax call. come back to this but idrc 
 
         });
     });

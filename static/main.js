@@ -73,14 +73,14 @@ var replace_correct_set = function(possibleSet){
     gameHand = remove_correct_set(possibleSet)
 }
 
-var check_set = function(possibleSet, possibleSetSrc){
+var check_set = function(possibleSet, possibleSetSrc, playerID){
     console.log(possibleSet)
     $.ajax({ 
         type: "POST",
         url: "/checkSet",                
         dataType : "json",
         contentType: "application/json; charset=utf-8",
-        data: JSON.stringify({possibleSet: possibleSet}),
+        data: JSON.stringify({possibleSet: possibleSet, playerID: playerID}),
         success: function(result){
             console.log("success")
             isSet = result["isSet"]
@@ -111,13 +111,13 @@ var check_set = function(possibleSet, possibleSetSrc){
     }); 
 }
 
-var check_set_in_hand = function(gameHand){
+var check_set_in_hand = function(gameHand, playerID){
     $.ajax({ 
         type: "POST",
         url: "/checkSetInHand",                
         dataType : "json",
         contentType: "application/json; charset=utf-8",
-        data: JSON.stringify({gameHand: gameHand}),
+        data: JSON.stringify({gameHand: gameHand, playerID: playerID}),
         success: function(result){
             isSet = result["isSet"]
             playerPoints = result["playerPoints"]
@@ -152,13 +152,21 @@ Array.prototype.remove = function() {
 };
 
 $(document).ready(function(){
+    console.log("playerPoints")
+    console.log(playerPoints)
+    console.log("current directory")
+    console.log($(location).attr('href'))
+    var playerID = $(location).attr('href').split("/")[4]
+    console.log(playerID)
     var possibleSet = []
     var possibleSetSrc = []
     display_hand(gameHand)
     $(document).on("click", "img", function(){
         var splitSrc = ($(this).attr('src'));
         var imgName = splitSrc.split("/")[3]
-        $( this ).toggleClass( "selectedCard" ); //#TODO: make a border around the cards when selected; right now they are just opaque
+        console.log("card selected:")
+        console.log(imgName)
+        $( this ).toggleClass( "selectedCard" ); //#TODO: make the card background get darker when selected; right now they are just opaque... hard to see
         if($.inArray(imgName, possibleSet) == -1){
             possibleSet.push(imgName)
         }
@@ -178,11 +186,11 @@ $(document).ready(function(){
         if(possibleSet.length == 3){
             console.log("it is three")
             //check if valid set
-            var isSet = check_set(possibleSet, possibleSetSrc)
+            var isSet = check_set(possibleSet, possibleSetSrc, playerID)
             possibleSet = []
             possibleSetSrc = []
         }
-        if(deckSize == 0 && !check_set_in_hand(gameHand)){
+        if(deckSize == 0 && !check_set_in_hand(gameHand, playerID)){
             alert("Game over!")
         }
     });

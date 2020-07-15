@@ -24,15 +24,20 @@ def home():
    global playerIDs
    print(session)
    if 'user' in session:
-      print("user exists: ")
+      print("user exists.") #TODO: not urgent, but when you dont quit Chrome the cookies stay and gives non-incognito window same uuid.
    else:
       id = uuid.uuid1()
       session["user"] = id.int
-      print(session)
-      playerIDs.append(session["user"])
+      print("session user")
+      print(session["user"])
+      print("first 15")
+      print(int(str(session["user"])[:15]))
+      shortenedID = str(session["user"])[:15]
+      playerIDs.append(shortenedID)
+      playerID = shortenedID
    print("playerIDs: ")
    print(playerIDs)
-   return render_template('playerload.html')
+   return render_template('playerload.html', playerID=playerID)
 
 @socketio.on('connect')
 def test_connect():
@@ -48,19 +53,23 @@ def value_changed(message):
 def play_clicked(message):
    print("MESSAGE:")
    print(message)
+   # When play button is clicked, there is one game object created with the playerIDs to the respective tabs
    global thisGame 
    global playerIDs
    global gameHand
    thisGame = game.createGame(playerIDs)
    gameHand = thisGame.dealInitial()
-   #startGame()
    emit('update screen', message, broadcast=True)
-   #return render_template('main.html', gameHand=None, deckSize=1)
 
-@app.route('/play', methods=['GET', 'POST'])
-def startGame():
+@app.route('/play/<id>', methods=['GET', 'POST'])
+def startGame(id=None):
+   # data = request.get_json()
+   # playerID = data["playerID"]
    print("startGame")
-   return render_template('main.html', gameHand=gameHand, deckSize=thisGame.getRemainingDeck())
+   # print("playerID")
+   # print(playerID)
+   global thisGame
+   return render_template('main.html', gameHand=gameHand, deckSize=thisGame.getRemainingDeck(), playerPoints=thisGame.getAllPlayerPoints())
 
 @app.route('/3more', methods=['GET', 'POST'])
 def deal3More():
@@ -75,26 +84,30 @@ def checkSet():
    print("data in check set:")
    print(data)
    possibleSet = data["possibleSet"]
+   playerID = data["playerID"]
    global thisGame
    isSet = thisGame.isSet(possibleSet)
    if isSet:
-      #thisGame.setPoints(thisGame.getPoints() + 1) TODO: fix these to give points to the specific player in question.
-      print("player gets point!")
+      oldPoints = thisGame.getPoints(playerID)
+      thisGame.setPoints(playerID, int(oldPoints) + 1) 
+      #TODO: fix these to give points to the specific player in question.
+      print("player " + playerID + " gets point!")
    else:
-      #thisGame.setPoints(thisGame.getPoints() - 1)
-      print("player does not win point.")
-   return jsonify(isSet=isSet, playerPoints=thisGame.getPoints())
+      thisGame.setPoints(playerID, thisGame.getPoints(playerID) - 1)
+      print("player " + playerID + " does not win point.")
+   return jsonify(isSet=isSet, playerPoints=thisGame.getAllPlayerPoints())
 
 @app.route('/checkSetInHand', methods=['GET', 'POST'])
 def checkSetInHand():
    data = request.get_json()
    gameHand = data["gameHand"]
+   playerID = data["playerID"]
    global thisGame
    isSet = thisGame.isSetInHand(gameHand)
    if isSet:
-      #thisGame.setPoints(thisGame.getPoints() -1) TODO: same as above.
+      thisGame.setPoints(playerID, thisGame.getPoints(playerID) -1) #TODO: same as above.
       print("player gets a point removed.")
-   return jsonify(isSet = isSet, playerPoints=thisGame.getPoints())
+   return jsonify(isSet = isSet, playerPoints=thisGame.getAllPlayerPoints())
 
 
 @app.route('/removeSet', methods=['GET', 'POST'])
@@ -115,3 +128,7 @@ if __name__ == '__main__':
    socketio.run(app, host='0.0.0.0')
 
 playerIDs = []
+# app.config["SECRET_KEY"] 
+
+for key in session.keys():
+     session.pop(key)
