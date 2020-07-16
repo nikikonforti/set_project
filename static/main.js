@@ -55,6 +55,7 @@ var remove_correct_set = function(possibleSet){
             gameHand = result["gameHand"]
             deckSize = result["deckSize"]
             display_hand(gameHand)
+            //socket.emit('Refresh cards', {who: $(this).attr('id'), data: 'main.html'})
         },
         error: function(request, status, error){
             console.log("Error");
@@ -74,6 +75,7 @@ var replace_correct_set = function(possibleSet){
 }
 
 var check_set = function(possibleSet, possibleSetSrc, playerID){
+    console.log("possible set in check_set")
     console.log(possibleSet)
     $.ajax({ 
         type: "POST",
@@ -90,7 +92,7 @@ var check_set = function(possibleSet, possibleSetSrc, playerID){
             document.getElementById("score").innerHTML = playerPoints;
             if(isSet){
                 alert("Correct!")
-                replace_correct_set(possibleSet)
+                replace_correct_set(possibleSet) //TODO: this has to propagate to all other users
             }
             else{
                 alert("Sorry, that's wrong")
@@ -156,6 +158,30 @@ $(document).ready(function(){
     console.log(playerPoints)
     console.log("current directory")
     console.log($(location).attr('href'))
+    var socket = io.connect('http://localhost:5000');
+            
+    socket.on('after connect', function(msg){
+        console.log('After connect', msg);
+    });
+
+    socket.on('update value', function(msg) {
+        console.log('update value in html');
+        $('#'+msg.who).val(msg.data);
+    });
+
+    socket.on('update screen', function(msg) { //TODO: this whole thing is only happening to one screen not both
+        $('#'+msg.who).val(msg.data);
+
+        console.log("who? " + $('#'+msg.who).val(msg.data))
+        console.log("who update " + msg.who)
+        console.log("data update " + msg.data)
+        console.log(msg.data.possibleSet)
+        var possibleSet = msg.data.possibleSet
+        var possibleSetSrc = msg.data.possibleSetSrc
+        var playerID = msg.data.playerID
+        var isSet = check_set(possibleSet, possibleSetSrc, playerID)
+        //window.location = "/play/" + playerID // Sends all tabs to same game object.
+    });
     var playerID = $(location).attr('href').split("/")[4]
     console.log(playerID)
     var possibleSet = []
@@ -186,7 +212,8 @@ $(document).ready(function(){
         if(possibleSet.length == 3){
             console.log("it is three")
             //check if valid set
-            var isSet = check_set(possibleSet, possibleSetSrc, playerID)
+            //var isSet = check_set(possibleSet, possibleSetSrc, playerID)
+            socket.emit('Refresh cards', {who: $(this).attr('id'), data: {possibleSet: possibleSet, possibleSetSrc: possibleSetSrc, playerID: playerID}})
             possibleSet = []
             possibleSetSrc = []
         }

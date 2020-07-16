@@ -37,7 +37,7 @@ def home():
       playerID = shortenedID
    print("playerIDs: ")
    print(playerIDs)
-   return render_template('playerload.html', playerID=playerID)
+   return render_template('playerload.html', playerID=playerID) #TODO: this is a problem. You can only render normal window then incog window not the other way around. I have NO idea. cookies? the devil???
 
 @socketio.on('connect')
 def test_connect():
@@ -61,14 +61,27 @@ def play_clicked(message):
    gameHand = thisGame.dealInitial()
    emit('update screen', message, broadcast=True)
 
+@socketio.on("Refresh cards")
+def refresh_cards(message):
+   print("refresh message:")
+   print(message)
+   global gameHand
+   print("game hand on refresh")
+   print(gameHand)
+   emit('update screen', message, broadcast=True)
+
 @app.route('/play/<id>', methods=['GET', 'POST'])
 def startGame(id=None):
    # data = request.get_json()
    # playerID = data["playerID"]
+   global thisGame
    print("startGame")
+   print(thisGame.getRemainingDeck())
+   print("gameHand in play")
+   print(gameHand)
+   print(id)
    # print("playerID")
    # print(playerID)
-   global thisGame
    return render_template('main.html', gameHand=gameHand, deckSize=thisGame.getRemainingDeck(), playerPoints=thisGame.getAllPlayerPoints())
 
 @app.route('/3more', methods=['GET', 'POST'])
@@ -81,7 +94,7 @@ def deal3More():
 @app.route('/checkSet', methods=['GET', 'POST'])
 def checkSet():
    data = request.get_json()
-   print("data in check set:")
+   print("data in checkSet:")
    print(data)
    possibleSet = data["possibleSet"]
    playerID = data["playerID"]

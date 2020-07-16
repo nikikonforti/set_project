@@ -42,7 +42,7 @@
 
         $(document).on("click", "#play_button", function(){
             console.log("play button clicked")
-            socket.emit('Play button clicked', {who: $(this).attr('id'), data: 'main.html'})
+            socket.emit('Play button clicked', {who: $(this).attr('id'), data: 'mainpre.html'})
             return false;
         });
 
