@@ -55,7 +55,7 @@ var remove_correct_set = function(possibleSet){
             gameHand = result["gameHand"]
             deckSize = result["deckSize"]
             display_hand(gameHand)
-            //socket.emit('Refresh cards', {who: $(this).attr('id'), data: 'main.html'})
+            //gameHand deckSize playerPoints
         },
         error: function(request, status, error){
             console.log("Error");
@@ -176,10 +176,12 @@ $(document).ready(function(){
         console.log("who update " + msg.who)
         console.log("data update " + msg.data)
         console.log(msg.data.possibleSet)
-        var possibleSet = msg.data.possibleSet
-        var possibleSetSrc = msg.data.possibleSetSrc
-        var playerID = msg.data.playerID
-        var isSet = check_set(possibleSet, possibleSetSrc, playerID)
+        var gameHand = msg.data.gameHand
+        var deckSize = msg.data.deckSize
+        var playerPoints = msg.data.playerPoints
+        var isSet = check_set(gameHand, deckSize, playerPoints)
+        socket.emit('Refresh cards', {who: $(this).attr('id'), data: {gameHand: gameHand, deckSize: deckSize, playerPoints: 999}}) //RIGHT HERE is where it is supposed to propegate to the other player but it does not.
+
         //window.location = "/play/" + playerID // Sends all tabs to same game object.
     });
     var playerID = $(location).attr('href').split("/")[4]
@@ -212,8 +214,8 @@ $(document).ready(function(){
         if(possibleSet.length == 3){
             console.log("it is three")
             //check if valid set
-            //var isSet = check_set(possibleSet, possibleSetSrc, playerID)
-            socket.emit('Refresh cards', {who: $(this).attr('id'), data: {possibleSet: possibleSet, possibleSetSrc: possibleSetSrc, playerID: playerID}})
+            var isSet = check_set(possibleSet, possibleSetSrc, playerID)
+            //socket.emit('Refresh cards', {who: $(this).attr('id'), data: {possibleSet: possibleSet, possibleSetSrc: possibleSetSrc, playerID: playerID}})
             possibleSet = []
             possibleSetSrc = []
         }
