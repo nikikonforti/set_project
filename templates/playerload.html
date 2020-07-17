@@ -31,11 +31,6 @@
             });
 
             socket.on('update screen', function(msg) {
-                console.log('button pushed and ready for update screen');
-                $('#'+msg.who).val(msg.data);
-                console.log("who? " + $('#'+msg.who).val(msg.data))
-                console.log("who update " + msg.who)
-                console.log("data update " + msg.data)
                 window.location = "/play/"
             });
         });
