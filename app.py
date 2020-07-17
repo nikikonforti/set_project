@@ -60,7 +60,7 @@ def play_clicked(message):
    gameHand = thisGame.dealInitial()
    emit('update screen', message, broadcast=True)
 
-@socketio.on("refresh")
+@socketio.on('refresh')
 def refresh_cards(message):
    print("refresh message:")
    print(message)

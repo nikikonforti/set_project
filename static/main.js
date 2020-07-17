@@ -55,7 +55,6 @@ var remove_correct_set = function(possibleSet){
             gameHand = result["gameHand"]
             deckSize = result["deckSize"]
             display_hand(gameHand)
-            //gameHand deckSize playerPoints
         },
         error: function(request, status, error){
             console.log("Error");
@@ -164,11 +163,6 @@ $(document).ready(function(){
         console.log('After connect', msg);
     });
 
-    socket.on('update value', function(msg) {
-        console.log('update value in html');
-        $('#'+msg.who).val(msg.data);
-    });
-
     socket.on('update screen', function(msg) { //TODO: this whole thing is only happening to one screen not both
         $('#'+msg.who).val(msg.data);
 
@@ -178,9 +172,10 @@ $(document).ready(function(){
         console.log(msg.data.possibleSet)
         var gameHand = msg.data.gameHand
         var deckSize = msg.data.deckSize
-        var playerPoints = msg.data.playerPoints
-        var isSet = check_set(gameHand, deckSize, playerPoints)
-        socket.emit('Refresh cards', {who: $(this).attr('id'), data: {gameHand: gameHand, deckSize: deckSize, playerPoints: 999}}) //RIGHT HERE is where it is supposed to propegate to the other player but it does not.
+        //var playerPoints = msg.data.playerPoints
+        window.location = "/fuck/"
+        //var isSet = check_set(gameHand, deckSize, playerPoints)
+        //socket.emit('Refresh cards', {who: $(this).attr('id'), data: {gameHand: gameHand, deckSize: deckSize, playerPoints: 999}}) //RIGHT HERE is where it is supposed to propegate to the other player but it does not.
 
         //window.location = "/play/" + playerID // Sends all tabs to same game object.
     });
@@ -213,8 +208,8 @@ $(document).ready(function(){
         if(possibleSet.length == 3){
             console.log("it is three")
             //check if valid set
-            var isSet = check_set(possibleSet, possibleSetSrc, playerID)
-            //socket.emit('Refresh cards', {who: $(this).attr('id'), data: {possibleSet: possibleSet, possibleSetSrc: possibleSetSrc, playerID: playerID}})
+            var isSet = check_set(possibleSet, possibleSetSrc)
+            socket.emit('refresh', {who: $(this).attr('id'), data: {possibleSet: possibleSet, possibleSetSrc: possibleSetSrc}})
             possibleSet = []
             possibleSetSrc = []
         }

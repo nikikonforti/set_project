@@ -24,21 +24,21 @@
             	console.log('after connect', msg);
             });
 
-        $(document).on("click", "#play_button", function(){
-            console.log("play button clicked")
-            socket.emit('play', {who: $(this).attr('id'), data: 'mainpre.html'})
-            return false;
-        });
+            $(document).on("click", "#play_button", function(){
+                console.log("play button clicked")
+                socket.emit('play', {who: $(this).attr('id'), data: 'mainpre.html'})
+                return false;
+            });
 
-        socket.on('update screen', function(msg) {
-            console.log('button pushed and ready for update screen');
-            $('#'+msg.who).val(msg.data);
-            console.log("who? " + $('#'+msg.who).val(msg.data))
-            console.log("who update " + msg.who)
-            console.log("data update " + msg.data)
-            window.location = "/play/"
+            socket.on('update screen', function(msg) {
+                console.log('button pushed and ready for update screen');
+                $('#'+msg.who).val(msg.data);
+                console.log("who? " + $('#'+msg.who).val(msg.data))
+                console.log("who update " + msg.who)
+                console.log("data update " + msg.data)
+                window.location = "/play/"
+            });
         });
-    });
     </script>
 
     <style>
