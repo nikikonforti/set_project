@@ -1,3 +1,4 @@
+var socket = io.connect('http://localhost:5000');
 var display_hand = function(gameHand){
     console.log("hello")
     console.log(gameHand)
@@ -54,7 +55,7 @@ var remove_correct_set = function(possibleSet){
         success: function(result){
             gameHand = result["gameHand"]
             deckSize = result["deckSize"]
-            display_hand(gameHand)
+            socket.emit('refresh', {who: $(this).attr('id'), data: {gameHand: gameHand}})
         },
         error: function(request, status, error){
             console.log("Error");
@@ -66,11 +67,6 @@ var remove_correct_set = function(possibleSet){
     console.log("gameHand at end of remove")
     console.log(gameHand)
     return gameHand
-}
-
-var replace_correct_set = function(possibleSet){
-    // first, remove the correct set from gameHand
-    gameHand = remove_correct_set(possibleSet)
 }
 
 var check_set = function(possibleSet, possibleSetSrc){
@@ -91,7 +87,7 @@ var check_set = function(possibleSet, possibleSetSrc){
             document.getElementById("score").innerHTML = playerPoints;
             if(isSet){
                 alert("Correct!")
-                replace_correct_set(possibleSet) //TODO: this has to propagate to all other users
+                gameHand = remove_correct_set(possibleSet)
             }
             else{
                 alert("Sorry, that's wrong")
@@ -157,27 +153,15 @@ $(document).ready(function(){
     console.log(playerPoints)
     console.log("current directory")
     console.log($(location).attr('href'))
-    var socket = io.connect('http://localhost:5000');
             
     socket.on('after connect', function(msg){
         console.log('After connect', msg);
     });
 
-    socket.on('update screen', function(msg) { //TODO: this whole thing is only happening to one screen not both
+    socket.on('update screen', function(msg) { 
         $('#'+msg.who).val(msg.data);
-
-        console.log("who? " + $('#'+msg.who).val(msg.data))
-        console.log("who update " + msg.who)
-        console.log("data update " + msg.data)
-        console.log(msg.data.possibleSet)
-        var gameHand = msg.data.gameHand
-        var deckSize = msg.data.deckSize
-        //var playerPoints = msg.data.playerPoints
-        window.location = "/fuck/"
-        //var isSet = check_set(gameHand, deckSize, playerPoints)
-        //socket.emit('Refresh cards', {who: $(this).attr('id'), data: {gameHand: gameHand, deckSize: deckSize, playerPoints: 999}}) //RIGHT HERE is where it is supposed to propegate to the other player but it does not.
-
-        //window.location = "/play/" + playerID // Sends all tabs to same game object.
+        gameHand = msg.data.gameHand
+        display_hand(gameHand)
     });
 
     var possibleSet = []
@@ -207,9 +191,8 @@ $(document).ready(function(){
         console.log(possibleSet.length)
         if(possibleSet.length == 3){
             console.log("it is three")
-            //check if valid set
-            var isSet = check_set(possibleSet, possibleSetSrc)
-            socket.emit('refresh', {who: $(this).attr('id'), data: {possibleSet: possibleSet, possibleSetSrc: possibleSetSrc}})
+            //check if valid set. if it is, the new display_hand propagates to all players
+            check_set(possibleSet, possibleSetSrc)
             possibleSet = []
             possibleSetSrc = []
         }

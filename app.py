@@ -17,23 +17,15 @@ playerIDs = []
 @app.route('/')
 def home():
    global playerIDs
-   print(session) # NAZLI: session is unique to each user, 
-   # what that means is if you print session in one of these endpoints it will only print the session info for the user that hit the endpoit
-   # since you are storing the userID in session using the session['user'] mapping you can keep track of your users that way
-   # look at check set method and the comments for example
+   print(session) 
    if 'user' in session:
       print("user exists.") #TODO: not urgent, but when you dont quit Chrome the cookies stay and gives non-incognito window same uuid.
-      playerID = session['user'] # NAZLI: you missed this line 
+      playerID = session['user'] 
       if playerID not in playerIDs:
-         playerIDs.append(playerID) # NAZLI: when you restart python (because you fix a small bug for example) playerIDs get cleared 
+         playerIDs.append(playerID) # when you restart python (because you fix a small bug for example) playerIDs get cleared 
          # however chrome still stores the session data in cookies so this if statement gets executed
          # so you need to make sure that playerIDs are restored after python refresh using session data
    else:
-      # NAZLI: in your previous implementation you added the long id to the dictionary but passed around the short id
-      # so why not create a shorter id from scratch
-      # shortuuid generate a 22 or so character random string, i still condense it for readability
-      # https://stackoverflow.com/questions/13484726/safe-enough-8-character-short-unique-random-string
-      # ^ ppl discuss condensing uuid vs shortuuid, they decided shortuuid result in a lot fewer collissions
       id = shortuuid.uuid()[:8]
       session["user"] = id
       print("session user")
@@ -48,7 +40,7 @@ def home():
 def test_connect():
    emit('after connect',  {'data':'Lets dance'})
 
-@socketio.on('play') #NAZLI: again with naming feel free to change if you want but i think this is more concise 
+@socketio.on('play') 
 def play_clicked(message):
    print("MESSAGE:")
    print(message)
@@ -91,11 +83,7 @@ def checkSet():
    print("data in checkSet:")
    print(data)
    possibleSet = data["possibleSet"]
-   playerID = session['user'] # NAZLI: originally you were getting the playerID from javascript but using session you can easily keep track of playerID
-   # session leverages cookies to keep track of well user "sessions"
-   # i know it was my idea to get javascript/client to tell the backend its user id, sorry, i basically just forgot that you were using sessions
-   # but again this is a good point about being familiar with your code and fully understanding what it does 
-   # remembering how session works, what it does etc would save you a lot of time about this
+   playerID = session['user']
    print('playerID')
    print(playerID)
    global thisGame
@@ -103,7 +91,6 @@ def checkSet():
    if isSet:
       oldPoints = thisGame.getPoints(playerID)
       thisGame.setPoints(playerID, int(oldPoints) + 1) 
-      #TODO: fix these to give points to the specific player in question.
       print("player " + playerID + " gets point!")
    else:
       thisGame.setPoints(playerID, thisGame.getPoints(playerID) - 1)
@@ -119,7 +106,7 @@ def checkSetInHand():
    global thisGame
    isSet = thisGame.isSetInHand(gameHand)
    if isSet:
-      thisGame.setPoints(playerID, thisGame.getPoints(playerID) -1) #TODO: same as above.
+      thisGame.setPoints(playerID, thisGame.getPoints(playerID) -1) 
       print("player gets a point removed.")
    return jsonify(isSet = isSet, playerPoints=thisGame.getAllPlayerPoints())
 
