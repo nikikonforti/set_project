@@ -21,58 +21,22 @@
             var socket = io.connect('http://localhost:5000');
             
             socket.on('after connect', function(msg){
-            	console.log('After connect', msg);
-            });
-
-            // An event handler for a change of value 
-			$('input.sync').on('input', function(event) {
-                socket.emit('Slider value changed', {who: $(this).attr('id'), data: $(this).val()});
-                console.log("who: ")
-                console.log($(this).attr('id')) //this gets you the slider that is moving, not which tab / user 
-                console.log("data: ")
-                console.log($(this).val())
-                return false;
-            });
-
-
-            socket.on('update value', function(msg) {
-            	console.log('update value in html');
-                $('#'+msg.who).val(msg.data);
+            	console.log('after connect', msg);
             });
 
         $(document).on("click", "#play_button", function(){
             console.log("play button clicked")
-            socket.emit('Play button clicked', {who: $(this).attr('id'), data: 'mainpre.html'})
+            socket.emit('play', {who: $(this).attr('id'), data: 'mainpre.html'})
             return false;
         });
 
         socket.on('update screen', function(msg) {
             console.log('button pushed and ready for update screen');
             $('#'+msg.who).val(msg.data);
-
             console.log("who? " + $('#'+msg.who).val(msg.data))
             console.log("who update " + msg.who)
             console.log("data update " + msg.data)
-            window.location = "/play/" + playerID // Sends all tabs to same game object.
-            // $.ajax({ 
-            //     type: "POST",
-            //     url: "/play",                
-            //     dataType : "html",
-            //     contentType: "application/json; charset=utf-8",
-            //     data: JSON.stringify({playerID}),
-            //     success: function(result){
-            //         console.log("success!")
-            //         console.log(result)
-            //     },
-            //     error: function(request, status, error){
-            //         console.log("Error");
-            //         console.log(request)
-            //         console.log(status)
-            //         console.log(error)
-            //     },
-            // }); 
-            // TODO: basically I tried to create this ajax call so i didnt have to put the entire playerID in the path but there are issues in chrome to render an entire HTML page with an ajax call. come back to this but idrc 
-
+            window.location = "/play/"
         });
     });
     </script>
@@ -95,24 +59,9 @@
 <body>
 
     <div class = "header"> Let's play Set! </div>
-
     <div class = "players"> When you have all your players logged on, press to play: </div>
     <div class="form-group">
-        <label for="formControlRange">Demo Slider </label>
         <button type="range" class="form-control-range sync" id = "play_button"> play! </button>
     </div>
-    <div class="container text-center">
-		<h1 >Slider Demo</h1>
-		<form class="mt-5">
-		  <div class="form-group">
-		    <label for="formControlRange">Demo Slider 1</label>
-		    <input type="range" class="form-control-range sync" id="slider1" min="0" max="50" value="{{slider1}}">
-		  </div>
-		  <div class="form-group">
-		    <label for="formControlRange">Demo Slider 2</label>
-		    <input type="range" class="form-control-range sync" id="slider2" min="0" max="50" value="{{slider2}}">
-		  </div>
-		</form>	
-	</div>
 </body>
 

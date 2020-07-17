@@ -7,6 +7,7 @@ class Game:
 		self.cards = cards
 		self.gameHand = []
 		self.playerPoints = {}
+		print(playerIDs)
 		for p in playerIDs:
 			self.playerPoints[p] = 0
 		print("playerPoints!!")
@@ -76,6 +77,7 @@ class Game:
 		return self.gameHand
 
 	def getPoints(self, playerID):
+		print(self.playerPoints)
 		return self.playerPoints[str(playerID)]
 
 	def setPoints(self, playerID, newPoints):
@@ -84,7 +86,9 @@ class Game:
 	def getAllPlayerPoints(self):
 		return self.playerPoints
 
-	def getRemainingDeck(self):
+	def getRemainingDeckSize(self): # NAZLI: when i saw the call this method in app.py i was confused because i thought you were getting a list of cards
+		# people should be able to tell what the function does from the name, like you can also make it getDeckSize or anything else you want 
+		# but make sure the name implies you are getting size
 		return len(self.cards)
 
 

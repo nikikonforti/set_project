@@ -74,7 +74,7 @@ var replace_correct_set = function(possibleSet){
     gameHand = remove_correct_set(possibleSet)
 }
 
-var check_set = function(possibleSet, possibleSetSrc, playerID){
+var check_set = function(possibleSet, possibleSetSrc){
     console.log("possible set in check_set")
     console.log(possibleSet)
     $.ajax({ 
@@ -82,7 +82,7 @@ var check_set = function(possibleSet, possibleSetSrc, playerID){
         url: "/checkSet",                
         dataType : "json",
         contentType: "application/json; charset=utf-8",
-        data: JSON.stringify({possibleSet: possibleSet, playerID: playerID}),
+        data: JSON.stringify({possibleSet: possibleSet}),
         success: function(result){
             console.log("success")
             isSet = result["isSet"]
@@ -119,7 +119,7 @@ var check_set_in_hand = function(gameHand, playerID){
         url: "/checkSetInHand",                
         dataType : "json",
         contentType: "application/json; charset=utf-8",
-        data: JSON.stringify({gameHand: gameHand, playerID: playerID}),
+        data: JSON.stringify({gameHand: gameHand}),
         success: function(result){
             isSet = result["isSet"]
             playerPoints = result["playerPoints"]
@@ -184,8 +184,7 @@ $(document).ready(function(){
 
         //window.location = "/play/" + playerID // Sends all tabs to same game object.
     });
-    var playerID = $(location).attr('href').split("/")[4]
-    console.log(playerID)
+
     var possibleSet = []
     var possibleSetSrc = []
     display_hand(gameHand)
