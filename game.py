@@ -7,11 +7,8 @@ class Game:
 		self.cards = cards
 		self.gameHand = []
 		self.playerPoints = {}
-		print(playerIDs)
 		for p in playerIDs:
 			self.playerPoints[p] = 0
-		print("playerPoints!!")
-		print(self.playerPoints)
 
 	def dealInitial(self):
 		random.shuffle(self.cards)
@@ -37,8 +34,8 @@ class Game:
 		arr_shape = [p_one[2], p_two[2], p_three[2]]
 		arr_solid = [p_one[3], p_two[3], p_three[3]]
 
-		#return self.check_feature(arr_num) and self.check_feature(arr_color) and self.check_feature(arr_shape) and self.check_feature(arr_solid)
-		return True
+		return self.check_feature(arr_num) and self.check_feature(arr_color) and self.check_feature(arr_shape) and self.check_feature(arr_solid)
+		#return True
 
 	def isSetInHand(self, gameHand):
 		for s in self.rSubset(gameHand, 3):
@@ -65,10 +62,6 @@ class Game:
 			return arr[0] != arr[2] and arr[1] != arr[2]
 
 	def removeSet(self, possibleSet):
-		print("possisble set in game.py")
-		print(possibleSet)
-		print("gamehand in game.py")
-		print(self.gameHand)
 		for p in possibleSet:
 			pFixed = p.split(".")[0]
 			for g in self.gameHand:
@@ -77,7 +70,6 @@ class Game:
 		return self.gameHand
 
 	def getPoints(self, playerID):
-		print(self.playerPoints)
 		return self.playerPoints[str(playerID)]
 
 	def setPoints(self, playerID, newPoints):

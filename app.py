@@ -19,7 +19,7 @@ def home():
    global playerIDs
    print(session) 
    if 'user' in session:
-      print("user exists.") #TODO: not urgent, but when you dont quit Chrome the cookies stay and gives non-incognito window same uuid.
+      print("user exists.") #TODO: when you dont quit Chrome the cookies stay and gives the window same uuid. How to dismiss cache after connect every time?
       playerID = session['user'] 
       if playerID not in playerIDs:
          playerIDs.append(playerID) # when you restart python (because you fix a small bug for example) playerIDs get cleared 
@@ -28,8 +28,6 @@ def home():
    else:
       id = shortuuid.uuid()[:8]
       session["user"] = id
-      print("session user")
-      print(session["user"])
       playerIDs.append(id)
       playerID = id
    print("playerIDs: ")
@@ -42,8 +40,6 @@ def test_connect():
 
 @socketio.on('play') 
 def play_clicked(message):
-   print("MESSAGE:")
-   print(message)
    # When play button is clicked, there is one game object created with the playerIDs to the respective tabs
    global thisGame 
    global playerIDs
@@ -54,38 +50,24 @@ def play_clicked(message):
 
 @socketio.on('refresh')
 def refresh_cards(message):
-   print("refresh message:")
-   print(message)
-   global gameHand
-   print("game hand on refresh")
-   print(gameHand)
    emit('update screen', message, broadcast=True)
 
 @app.route('/play/', methods=['GET', 'POST'])
 def startGame():
    global thisGame
-   print("startGame")
-   print(thisGame.getRemainingDeckSize())
-   print("gameHand in play")
-   print(gameHand)
    return render_template('main.html', gameHand=gameHand, deckSize=thisGame.getRemainingDeckSize(), playerPoints=thisGame.getAllPlayerPoints())
 
 @app.route('/3more', methods=['GET', 'POST'])
 def deal3More():
    global gameHand
-   print(session)
    gameHand = thisGame.clickDeal()
    return jsonify(gameHand=gameHand, deckSize=thisGame.getRemainingDeckSize())
 
 @app.route('/checkSet', methods=['GET', 'POST'])
 def checkSet():
    data = request.get_json()
-   print("data in checkSet:")
-   print(data)
    possibleSet = data["possibleSet"]
    playerID = session['user']
-   print('playerID')
-   print(playerID)
    global thisGame
    isSet = thisGame.isSet(possibleSet)
    if isSet:
@@ -100,14 +82,13 @@ def checkSet():
 @app.route('/checkSetInHand', methods=['GET', 'POST'])
 def checkSetInHand():
    data = request.get_json()
-   print(data)
    gameHand = data["gameHand"]
    playerID = session["user"]
    global thisGame
    isSet = thisGame.isSetInHand(gameHand)
    if isSet:
       thisGame.setPoints(playerID, thisGame.getPoints(playerID) -1) 
-      print("player gets a point removed.")
+      print("player " + playerID + " gets a point removed.")
    return jsonify(isSet = isSet, playerPoints=thisGame.getPoints(playerID))
 
 
