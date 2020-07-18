@@ -34,7 +34,8 @@ var deal_three_more = function(gameHand){
         success: function(result){
             gameHand = result["gameHand"]
             deckSize = result["deckSize"]
-            display_hand(gameHand)
+            //display_hand(gameHand)
+            socket.emit('refresh', {who: $(this).attr('id'), data: {gameHand: gameHand}})
         },
         error: function(request, status, error){
             console.log("Error");
@@ -108,7 +109,7 @@ var check_set = function(possibleSet, possibleSetSrc){
     }); 
 }
 
-var check_set_in_hand = function(gameHand, playerID){
+var check_set_in_hand = function(gameHand){
     $.ajax({ 
         type: "POST",
         url: "/checkSetInHand",                
@@ -196,7 +197,7 @@ $(document).ready(function(){
             possibleSet = []
             possibleSetSrc = []
         }
-        if(deckSize == 0 && !check_set_in_hand(gameHand, playerID)){
+        if(deckSize == 0 && !check_set_in_hand(gameHand)){
             alert("Game over!")
         }
     });

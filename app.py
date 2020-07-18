@@ -95,20 +95,20 @@ def checkSet():
    else:
       thisGame.setPoints(playerID, thisGame.getPoints(playerID) - 1)
       print("player " + playerID + " does not win point.")
-   return jsonify(isSet=isSet, playerPoints=thisGame.getAllPlayerPoints())
+   return jsonify(isSet=isSet, playerPoints=thisGame.getPoints(playerID))
 
 @app.route('/checkSetInHand', methods=['GET', 'POST'])
 def checkSetInHand():
    data = request.get_json()
    print(data)
    gameHand = data["gameHand"]
-   playerID = data["playerID"]
+   playerID = session["user"]
    global thisGame
    isSet = thisGame.isSetInHand(gameHand)
    if isSet:
       thisGame.setPoints(playerID, thisGame.getPoints(playerID) -1) 
       print("player gets a point removed.")
-   return jsonify(isSet = isSet, playerPoints=thisGame.getAllPlayerPoints())
+   return jsonify(isSet = isSet, playerPoints=thisGame.getPoints(playerID))
 
 
 @app.route('/removeSet', methods=['GET', 'POST'])
