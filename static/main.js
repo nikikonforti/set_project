@@ -1,4 +1,4 @@
-var socket = io.connect('http://localhost:5000');
+var socket = io.connect('http://167.99.226.165:5000');
 var display_hand = function(gameHand){
     console.log("hello")
     console.log(gameHand)
